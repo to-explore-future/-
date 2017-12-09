@@ -22,6 +22,15 @@
 //    self.view.backgroundColor = [UIColor lightGrayColor];
     
     MyLayout * cc = [[MyLayout alloc]initWithFrame:CGRectMake(0, 100, width, 500)];
+    [cc initData];
+//    [cc setLinespace:10];
+//    [cc setRowspace:10];
+//    [cc setElementPaddinLeft:10];
+//    [cc setElementPaddinRight:10];
+//    [cc setElementPaddinTop:10];
+//    [cc setElementPaddinBottom:10];
+    [cc setSelfPadding:10];
+    
     cc.backgroundColor = [UIColor lightGrayColor];
     [self.view addSubview:cc];
     

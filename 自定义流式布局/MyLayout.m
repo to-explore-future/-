@@ -16,6 +16,15 @@
 @property(nonatomic,strong)NSMutableArray   * groupedLabelArray;//分组后的 数组
 @property(nonatomic,strong)NSMutableArray   * remainingWidths;
 @property(nonatomic,strong)NSMutableArray   * everyLineLabelShouldAddWidth;
+@property(nonatomic,assign)CGFloat            lineSpace;
+@property(nonatomic,assign)CGFloat            rowSpace;
+
+@property(nonatomic,assign)CGFloat            paddingLeft;
+@property(nonatomic,assign)CGFloat            paddingRight;
+@property(nonatomic,assign)CGFloat            paddingTop;
+@property(nonatomic,assign)CGFloat            paddingBottom;
+
+@property(nonatomic,assign)CGFloat            padding;
 
 @end
 
@@ -29,18 +38,80 @@
     return self;
 }
 
+/**
+ *  设置行间距
+ */
+-(void)setLinespace:(CGFloat)lineSpace{
+    self.lineSpace = lineSpace;
+}
+
+/**
+ *  设置列间距
+ */
+-(void)setRowspace:(CGFloat)rowSpace{
+    self.rowSpace = rowSpace;
+}
+
+/**
+ *  设置元素的 paddingLeft
+ */
+-(void)setElementPaddinLeft:(CGFloat)paddingLeft{
+    self.paddingLeft = paddingLeft;
+}
+
+/**
+ *  设置元素的 paddingRight
+ */
+-(void)setElementPaddinRight:(CGFloat)paddingRight{
+    self.paddingRight = paddingRight;
+}
+
+/**
+ *  设置元素的 paddingTop
+ */
+-(void)setElementPaddinTop:(CGFloat)paddingTop{
+    self.paddingTop = paddingTop;
+}
+
+/**
+ *  设置元素的 paddingBottom
+ */
+-(void)setElementPaddinBottom:(CGFloat)paddingBottom{
+    self.paddingBottom = paddingBottom;
+}
+
+/**
+ *  设置 self 的 padding
+ */
+-(void)setSelfPadding:(CGFloat)padding{
+    self.padding = padding;
+}
+
+-(void)initData{
+    self.lineSpace      = 5;
+    self.rowSpace       = 5;
+    
+    self.paddingLeft    = 6;
+    self.paddingRight   = 6;
+    self.paddingTop     = 3;
+    self.paddingBottom  = 3;
+    
+    self.padding        = 5;
+    
+}
+
 -(void)setData:(NSArray<NSString *> *)datas{
     self.datas = datas;
     
     //设置行间距 设置列间距
-    CGFloat lineSpace = 5;
-    CGFloat rowSpace = 5;
+//    CGFloat lineSpace = 5;
+//    CGFloat rowSpace = 5;
     //我们理解 这儿文字呢 默认情况下 得有一个内边距 sizeToFit 之后 得到的 是没有内边距的文字
     //所以呢 每个 label 默认给3个单位的内边距  左右内边距 和上下内边距
-    CGFloat paddingLeft = 6;
-    CGFloat paddingRight = 6;
-    CGFloat paddingTop = 3;
-    CGFloat paddingBottom = 3;
+//    CGFloat paddingLeft = 6;
+//    CGFloat paddingRight = 6;
+//    CGFloat paddingTop = 3;
+//    CGFloat paddingBottom = 3;
     
     //有了数据之后  把集合中的每一个 string 拿出来 创建对应的 uilabel
     for (int i  = 0 ; i < datas.count; i ++) {
@@ -56,8 +127,8 @@
     }
     //第二部 有了这么多的 label 绘制
     CGFloat selfWidth = self.frame.size.width;    //控件本身的宽度
-    CGFloat padding = 5;//控件的边距
-    CGFloat selfValidWidth = selfWidth - padding * 2;
+//    CGFloat padding = 5;//控件的边距
+    CGFloat selfValidWidth = selfWidth - self.padding * 2;
     CGFloat sumWidth = 0;
     
     //开始分组
@@ -70,7 +141,7 @@
     for (int i = 0 ; i < datas.count; i ++) {
         UILabel * label = self.labelArray[i];
         CGFloat width = label.frame.size.width;   //这个控件的宽度
-        width += (paddingLeft + paddingRight);
+        width += (self.paddingLeft + self.paddingRight);
         
         sumWidth += width;
         NSLog(@"sumWidth = %f",sumWidth);
@@ -90,7 +161,7 @@
 //            [oneLine addObject:label];
 //            sumWidth += width;
             //在上面首先加上 label 的宽度 ，计算了一次 该不该换行，如果不改换行的 那么这里加上
-            sumWidth += rowSpace;
+            sumWidth += self.rowSpace;
         }
         
         [oneLine addObject:label];//只要是 sumWidth 重置之后 ，这个 online 就会指向一个新的集合
@@ -118,10 +189,10 @@
             //我要计算出 每一样剩余 多少可用的空间
             UILabel * label = self.groupedLabelArray[i][j];
             CGFloat width = label.frame.size.width;
-            width += (paddingLeft + paddingRight);
+            width += (self.paddingLeft + self.paddingRight);
             sumWidth += width;
         }
-        CGFloat remainingWidth = selfValidWidth - sumWidth - rowSpace * (count - 1);//除了减去字体的总宽度 还要减去 字体之间的间距的总和
+        CGFloat remainingWidth = selfValidWidth - sumWidth - self.rowSpace * (count - 1);//除了减去字体的总宽度 还要减去 字体之间的间距的总和
 //        NSNumber *remainWidth = [NSNumber numberWithInteger:remainingWidth];
         //我把求出的这个每一行 剩下的宽度 存到一个集合中 ，
 //        [self.remainingWidths addObject:remainWidth];
@@ -148,9 +219,9 @@
         //每一行的高度 应该在外面计算
         CGFloat y = 0;
         if (i == 0 ) {
-            y = padding;
+            y = self.padding;
         }else{
-            y = i * (setLabelHeight + (paddingTop + paddingBottom)+ lineSpace) + padding;
+            y = i * (setLabelHeight + (self.paddingTop + self.paddingBottom)+ self.lineSpace) + self.padding;
         }
         CGFloat thisLineLabelShouldAddWidth = [self.everyLineLabelShouldAddWidth[i] floatValue];
         CGFloat sumX = 0;//每个控件的 x 的位置 累加记录一下
@@ -159,17 +230,17 @@
             UILabel * label = lineArray[j];
             CGFloat labelWidth = label.frame.size.width;
 //            labelWidth += thisLineLabelShouldAddWidth;
-            labelWidth += (paddingLeft + paddingRight) + thisLineLabelShouldAddWidth;
+            labelWidth += (self.paddingLeft + self.paddingRight) + thisLineLabelShouldAddWidth;
             CGFloat labelHeight = label.frame.size.height;
-            labelHeight += (paddingTop + paddingBottom);
+            labelHeight += (self.paddingTop + self.paddingBottom);
             
             CGFloat x = 0;  //不管是哪个 label 都要首先取出他的实际宽度 记录一下 累加一下
             if(j == 0 ){
-                x = padding;
-                sumX = padding;
+                x = self.padding;
+                sumX = self.padding;
                 sumX += labelWidth ;
             }else{
-                x = sumX + rowSpace * j;//加上 label 个数- 1 个的间距
+                x = sumX + self.rowSpace * j;//加上 label 个数- 1 个的间距
                 sumX += labelWidth ;
             }
 //            sumX += labelWidth + rowSpace;
@@ -231,5 +302,7 @@
     }
     return _everyLineLabelShouldAddWidth;
 }
+
+
 
 @end
