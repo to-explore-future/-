@@ -25,6 +25,7 @@
 @property(nonatomic,assign)CGFloat            paddingBottom;
 
 @property(nonatomic,assign)CGFloat            padding;
+@property(nonatomic,assign)CGFloat            totalHeight;      //这个控件的总高度
 
 @end
 
@@ -91,12 +92,12 @@
     self.lineSpace      = 5;
     self.rowSpace       = 5;
     
-    self.paddingLeft    = 6;
-    self.paddingRight   = 6;
-    self.paddingTop     = 3;
-    self.paddingBottom  = 3;
+    self.paddingLeft    = 6;//控件中每个元素的 左 内边距
+    self.paddingRight   = 6;//控件中每个元素的 右 内边距
+    self.paddingTop     = 3;//控件中每个元素的 上 内边距
+    self.paddingBottom  = 3;//控件中每个元素的 下 内边距
     
-    self.padding        = 5;
+    self.padding        = 5;//这个是这个控件的 整体的内边距
     
 }
 
@@ -213,8 +214,22 @@
     
     UILabel * ll = self.groupedLabelArray[0][0];
     CGFloat setLabelHeight = ll.frame.size.height;
+    //计算高度
+    _totalHeight += self.padding;    //加上一个 paddingTop
     
-    for (int i = 0 ; i < tempCount; i++) {//外层循环 决定行高 行间距
+    for (int i = 0 ; i < tempCount; i++) {              //外层循环 决定行高 行间距
+        //只要外循环进来了 说明这样行有东西 说明这一行的高度应该算进来
+        /**
+         *  当计算这个控件的高度的时候呢 一定要考虑到 得到的每个元素的高度 只是这个元素的实际的高度 ，
+         *  而我是给这个元素添加了 内边距的
+         */
+        if (i == 0) {//如果不是第一行 ，其余所有的行都加上一个
+            _totalHeight += setLabelHeight + (_paddingTop + _paddingBottom);
+        }else{
+            _totalHeight += (setLabelHeight + _lineSpace + _paddingTop + _paddingBottom);
+        }
+        NSLog(@"totalHeight = %f",_totalHeight);
+        
         NSArray * lineArray = self.groupedLabelArray[i];
         //每一行的高度 应该在外面计算
         CGFloat y = 0;
@@ -225,6 +240,7 @@
         }
         CGFloat thisLineLabelShouldAddWidth = [self.everyLineLabelShouldAddWidth[i] floatValue];
         CGFloat sumX = 0;//每个控件的 x 的位置 累加记录一下
+        
         for (int j = 0 ; j < lineArray.count; j++) {
             //先不考虑间距
             UILabel * label = lineArray[j];
@@ -252,8 +268,15 @@
             [self addSubview:label];
         }
     }
+    _totalHeight += self.padding;
+    NSLog(@"totalHeight = %f",_totalHeight);
+    
+    //计算这个控件的高度 无非就是把所有的 相关的高度累加起来
+    // paddingTop + paddingBottom + labelHeight*lineNum + lineSpace*(lineNum - 1)
+    CGRect rect = self.frame;
+    rect.size.height = _totalHeight;
+    [self setFrame:rect];
 }
-
 
 -(void)setTextFont:(UIFont *)font{
     self.font = font;
