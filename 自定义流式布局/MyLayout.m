@@ -182,7 +182,7 @@
      *  绘制之前呢 计算一下 每一行   - 控件的内边距 - labelSpace 还剩下多少 剩余空间 ，把这些多余的空间 平局分配到 每个 label
      *  的宽度上面
      */
-    for (int i = 0 ; i < self.groupedLabelArray.count; i++) {
+    for (int i = 0 ; i < self.groupedLabelArray.count - 1; i++) {
         NSArray * temp = self.groupedLabelArray[i];
         NSInteger count = temp.count;
         CGFloat sumWidth = 0;
@@ -204,14 +204,12 @@
         sumWidth = 0;
         NSLog(@"remainingWidth = %f",remainingWidth);
     }
-    
-    
+    //让最后一行 不平分 多余的宽度
+    [self.everyLineLabelShouldAddWidth addObject:[NSNumber numberWithInt:0]];
     /**
      *  开始绘制
      */
-    
     //得到其中任意一个 label 的 高度
-    
     UILabel * ll = self.groupedLabelArray[0][0];
     CGFloat setLabelHeight = ll.frame.size.height;
     //计算高度
